@@ -11,25 +11,38 @@ class BabblePlayer {
         this.isPlaying = false;
     }
 
-    async nextQueue() {
-        const word = this.queue.shift();
-
+    async playSound(word) {
+        console.log("playSound", word);
+        
         const audio = new Audio();
-        audio.src = `./sounds/${word}.wav`;
-
 
         const playPromise = new Promise((res, rej) => {
             audio.onended = res;
             audio.onerror = rej;
-            audio.play();
-          });
-  
-        try {
-            await playPromise;
-        } catch(e) {
-            console.error("could not play", e);
-        }
+            audio.src = `./sounds/${word}.wav`;
 
+            audio.play();
+        });
+
+        return playPromise;
+    }
+
+    async nextQueue() {
+        const word = this.queue.shift();
+        
+
+        try {
+            await this.playSound(word)
+        } catch(e) {
+
+            console.warn("failed to find word sound")
+
+            try {
+                await this.playSound("default");
+            } catch(e) {
+                console.warn("failed to find deafult sound")
+            }
+        }
 
         if(this.queue.length > 0) {
             return await this.nextQueue();

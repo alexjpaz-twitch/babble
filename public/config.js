@@ -1,3 +1,3 @@
 window.BABBLE_CONFIG = {
-    "channel": "notenoughcredits",
+    "channel": "alexjpaz",
 };
