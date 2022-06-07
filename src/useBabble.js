@@ -74,10 +74,6 @@ export default function useBabble() {
         const babblePlayer = new BabblePlayer();
 
         ComfyJS.onCommand = ( user, command, message, flags, self, extra ) => {
-            if(!(flags.broadcaster || flags.vip)) {
-                return;
-            }
-
             try {
                 const words = [command].concat(message.split(" "));
 
