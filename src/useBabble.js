@@ -74,7 +74,7 @@ class BabblePlayer {
 }
 
 export default function useBabble() { 
-    
+
     useEffect(() => {
         if(isStarted) {
             return;
@@ -84,15 +84,20 @@ export default function useBabble() {
             isStarted = true;
         }
 
-       
+        console.log(window.BABBLE_CONFIG)
 
         const babblePlayer = new BabblePlayer();
 
-        ComfyJS.onMessage = ( user, message, flags, self, extra ) => {
+        ComfyJS.onChat = ( user, message, flags, self, extra ) => {
+
+            console.log(message)
+
             try {
                 let words = message.split(" ");
 
-                if(words[0] !== window.BABBLE_CONFIG.triggerPhrase) {
+                console.log(words[0])
+
+                if(words[0] !== window.BABBLE_CONFIG.triggerPrefix) {
                     return;
                 }
 
