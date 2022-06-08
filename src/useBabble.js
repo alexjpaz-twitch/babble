@@ -29,7 +29,6 @@ class BabblePlayer {
 
     async nextQueue() {
         const word = this.queue.shift();
-        
 
         try {
             await this.playSound(word)
@@ -58,6 +57,9 @@ class BabblePlayer {
         }
 
         words.forEach((word) => {
+            if(!word) return;
+            if( word.trim() == '') return;
+
             this.queue.push(word);   
         });
 
@@ -86,9 +88,17 @@ export default function useBabble() {
 
         const babblePlayer = new BabblePlayer();
 
-        ComfyJS.onCommand = ( user, command, message, flags, self, extra ) => {
+        ComfyJS.onMessage = ( user, message, flags, self, extra ) => {
             try {
-                const words = [command].concat(message.split(" "));
+                let words = message.split(" ");
+
+                if(words[0] !== window.BABBLE_CONFIG.triggerPhrase) {
+                    return;
+                }
+
+                words = words.slice(1);
+
+                console.log(words)
 
                 babblePlayer.enqueue(words);
 

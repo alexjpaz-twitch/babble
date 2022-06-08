@@ -1,3 +1,4 @@
 window.BABBLE_CONFIG = {
-    "channel": "alexjpaz",
+    "channel": "notenoughcredits",
+    "extension": "wav",
 };
