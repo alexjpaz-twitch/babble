@@ -96,6 +96,12 @@ export default function useBabble() {
               return;
             }
 
+            if(!flags.broadcaster) {
+                if(window.BABBLE_CONFIG.viponly && !flags.vip ) {
+                    return;
+                }
+            }
+
             // Weird shit
 
             console.log(message)
@@ -135,11 +141,16 @@ export default function useBabble() {
                 triggerPrefix = triggerPrefix.slice(1);
             }
 
-
             // Weird shit
 
             if(command !== triggerPrefix) {
                 return;
+            }
+
+            if(!flags.broadcaster) {
+                if(window.BABBLE_CONFIG.viponly && !flags.vip ) {
+                    return;
+                }
             }
 
             try {
