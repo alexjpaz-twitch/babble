@@ -90,10 +90,22 @@ export default function useBabble() {
 
         ComfyJS.onChat = ( user, message, flags, self, extra ) => {
 
+            let triggerPrefix = window.BABBLE_CONFIG.triggerPrefix;
+
+            if(triggerPrefix.startsWith("!")) {
+              return;
+            }
+
+            // Weird shit
+
             console.log(message)
 
             try {
-                let words = message.split(" ");
+                let words = message
+                    .toLowerCase()
+                    .replace(/[\W_]+/g," ")
+                    .trim()
+                    .split(" ");
 
                 console.log(words[0])
 
@@ -104,6 +116,38 @@ export default function useBabble() {
                 words = words.slice(1);
 
                 console.log(words)
+
+                babblePlayer.enqueue(words);
+
+                babblePlayer.play();
+                
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+
+        ComfyJS.onCommand = ( user, command, message, flags, self, extra ) => {
+
+            let triggerPrefix = window.BABBLE_CONFIG.triggerPrefix;
+
+            if(triggerPrefix.startsWith("!")) {
+                triggerPrefix = triggerPrefix.slice(1);
+            }
+
+
+            // Weird shit
+
+            if(command !== triggerPrefix) {
+                return;
+            }
+
+            try {
+                let words = message
+                    .toLowerCase()
+                    .replace(/[\W_]+/g," ")
+                    .trim()
+                    .split(" ");    
 
                 babblePlayer.enqueue(words);
 
