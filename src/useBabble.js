@@ -95,7 +95,8 @@ export class BabblePlayer {
         try {
             let words = message
                 .toLowerCase()
-                .replace(/[\W_]+/g," ")
+                .replace(/[']+/g,"")
+                .replace(/[\W_"]+/g," ")
                 .trim()
                 .split(" ");    
 

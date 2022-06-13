@@ -77,9 +77,9 @@ describe("BabblePlayer", () => {
                 "broadcaster": true,
             };
 
-            player.onCommand(TEST_USER_1, "say", "hello i, am ALEX.", flags);
+            player.onCommand(TEST_USER_1, "say", "hello i, am ALEX. won't", flags);
 
-            expect(player.enqueue).toBeCalledWith(["hello", "i", "am", "alex"]);
+            expect(player.enqueue).toBeCalledWith(["hello", "i", "am", "alex", "wont"]);
             expect(player.play).toBeCalled();
             
         });
