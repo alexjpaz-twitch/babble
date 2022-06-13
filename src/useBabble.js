@@ -4,15 +4,15 @@ const ComfyJS = require("comfy.js");
 
 let isStarted = false;
 
-class BabblePlayer {
+export class BabblePlayer {
 
-    constructor() {
+    constructor(config = window.BABBLE_CONFIG) {
+        this.config = config;
         this.queue = [];
         this.isPlaying = false;
     }
 
     async playSound(word) {
-        console.log("playSound", word);
         
         const audio = new Audio();
 
@@ -71,9 +71,91 @@ class BabblePlayer {
             this.nextQueue();
         }
     };
+
+    onCommand(user, command, message, flags, self, extra) {
+        let triggerPrefix = this.config.triggerPrefix;
+
+        if(triggerPrefix.startsWith("!")) {
+            triggerPrefix = triggerPrefix.slice(1);
+        }
+
+        // Weird shit
+
+        if(command !== triggerPrefix) {
+            return;
+        }
+
+
+        if(!flags.broadcaster) {
+            console.log(1,this.config.viponly && !flags.vip )
+            if(this.config.viponly && flags.vip === false) {
+                return;
+            }
+        }
+
+        try {
+            let words = message
+                .toLowerCase()
+                .replace(/[\W_]+/g," ")
+                .trim()
+                .split(" ");    
+
+            this.enqueue(words);
+
+            this.play();
+            
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    onChat(user, message, flags, self, extra) {
+        let triggerPrefix = this.config.triggerPrefix;
+
+        if(triggerPrefix.startsWith("!")) {
+          return;
+        }
+
+        if(!flags.broadcaster) {
+            if(this.config.viponly && !flags.vip ) {
+                return;
+            }
+        }
+
+        try {
+            let words = message
+                .toLowerCase()
+                .replace(/[\W_]+/g," ")
+                .trim()
+                .split(" ");
+
+            if(words[0] !== this.config.triggerPrefix) {
+                return;
+            }
+
+            words = words.slice(1);
+
+            this.enqueue(words);
+
+            this.play();
+            
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    start() {
+        ComfyJS.Init( this.config.channel );
+    }
+
+    stop() {
+        ComfyJS.Disconnect();
+    }
 }
 
 export default function useBabble() { 
+
+    const babblePlayer = new BabblePlayer();
 
     useEffect(() => {
         if(isStarted) {
@@ -84,95 +166,11 @@ export default function useBabble() {
             isStarted = true;
         }
 
-        console.log(window.BABBLE_CONFIG)
+        babblePlayer.start();
 
-        const babblePlayer = new BabblePlayer();
-
-        ComfyJS.onChat = ( user, message, flags, self, extra ) => {
-
-            let triggerPrefix = window.BABBLE_CONFIG.triggerPrefix;
-
-            if(triggerPrefix.startsWith("!")) {
-              return;
-            }
-
-            if(!flags.broadcaster) {
-                if(window.BABBLE_CONFIG.viponly && !flags.vip ) {
-                    return;
-                }
-            }
-
-            // Weird shit
-
-            console.log(message)
-
-            try {
-                let words = message
-                    .toLowerCase()
-                    .replace(/[\W_]+/g," ")
-                    .trim()
-                    .split(" ");
-
-                console.log(words[0])
-
-                if(words[0] !== window.BABBLE_CONFIG.triggerPrefix) {
-                    return;
-                }
-
-                words = words.slice(1);
-
-                console.log(words)
-
-                babblePlayer.enqueue(words);
-
-                babblePlayer.play();
-                
-            } catch(e) {
-                console.error(e);
-            }
-        }
-
-
-        ComfyJS.onCommand = ( user, command, message, flags, self, extra ) => {
-
-            let triggerPrefix = window.BABBLE_CONFIG.triggerPrefix;
-
-            if(triggerPrefix.startsWith("!")) {
-                triggerPrefix = triggerPrefix.slice(1);
-            }
-
-            // Weird shit
-
-            if(command !== triggerPrefix) {
-                return;
-            }
-
-            if(!flags.broadcaster) {
-                if(window.BABBLE_CONFIG.viponly && !flags.vip ) {
-                    return;
-                }
-            }
-
-            try {
-                let words = message
-                    .toLowerCase()
-                    .replace(/[\W_]+/g," ")
-                    .trim()
-                    .split(" ");    
-
-                babblePlayer.enqueue(words);
-
-                babblePlayer.play();
-                
-            } catch(e) {
-                console.error(e);
-            }
-        }
-
-        ComfyJS.Init( window.BABBLE_CONFIG.channel );
     }, []);
 
     return () => {
-        ComfyJS.Disconnect();
+        babblePlayer.stop();
     };
 }
