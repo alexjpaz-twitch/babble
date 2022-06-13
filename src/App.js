@@ -1,8 +1,5 @@
-import logo from './logo.svg';
 import './App.css';
 import useBabble from './useBabble'
-
-
 
 function App() {
   useBabble();

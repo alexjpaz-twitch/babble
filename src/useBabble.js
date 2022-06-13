@@ -58,7 +58,7 @@ export class BabblePlayer {
 
         words.forEach((word) => {
             if(!word) return;
-            if( word.trim() == '') return;
+            if( word.trim() === '') return;
 
             this.queue.push(word);   
         });
@@ -137,7 +137,8 @@ export default function useBabble() {
 
         babblePlayer.start();
 
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ ]);
 
     return () => {
         babblePlayer.stop();
