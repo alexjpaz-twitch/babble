@@ -73,22 +73,19 @@ export class BabblePlayer {
     };
 
     onCommand(user, command, message, flags, self, extra) {
+
         let triggerPrefix = this.config.triggerPrefix;
 
-        if(triggerPrefix.startsWith("!")) {
-            triggerPrefix = triggerPrefix.slice(1);
+        if(this.config.triggerPrefix.startsWith("!")) {
+            triggerPrefix = this.config.triggerPrefix.slice(1);
         }
 
-        // Weird shit
-
-        if(command !== triggerPrefix) {
+        if(command.toLowerCase() !== triggerPrefix.toLowerCase()) {
             return;
         }
 
-
         if(!flags.broadcaster) {
-            console.log(1,this.config.viponly && !flags.vip )
-            if(this.config.viponly && flags.vip === false) {
+            if(this.config.viponly === true && flags.vip === false) {
                 return;
             }
         }
@@ -110,41 +107,13 @@ export class BabblePlayer {
     }
 
     onChat(user, message, flags, self, extra) {
-        let triggerPrefix = this.config.triggerPrefix;
-
-        if(triggerPrefix.startsWith("!")) {
-          return;
-        }
-
-        if(!flags.broadcaster) {
-            if(this.config.viponly && !flags.vip ) {
-                return;
-            }
-        }
-
-        try {
-            let words = message
-                .toLowerCase()
-                .replace(/[\W_]+/g," ")
-                .trim()
-                .split(" ");
-
-            if(words[0] !== this.config.triggerPrefix) {
-                return;
-            }
-
-            words = words.slice(1);
-
-            this.enqueue(words);
-
-            this.play();
-            
-        } catch(e) {
-            console.error(e);
-        }
+        const words = message.split(" ");
+        return this.onCommand(user, words[0], words.slice(1).join(" "), flags, self, extra);
     }
 
     start() {
+        ComfyJS.onChat = this.onChat.bind(this);
+        ComfyJS.onCommand = this.onCommand.bind(this);
         ComfyJS.Init( this.config.channel );
     }
 
