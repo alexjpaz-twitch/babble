@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 
-const ComfyJS = require("comfy.js");
+// eslint-disable-next-line
+import * as ComfyJS from 'comfy.js';
+
 
 let isStarted = false;
 
